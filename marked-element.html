@@ -27,6 +27,8 @@ Element wrapper for the `marked` (http://marked.org/) library.
 
     attached: function() {
       marked.setOptions({
+        gfm: true, // required by breaks: true 
+        breaks: true, // requested by *ma*
         highlight: this.highlight.bind(this)
       });
       if (!this.text) {
