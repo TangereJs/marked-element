@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
@@ -15,46 +15,50 @@ Element wrapper for the `marked` (http://marked.org/) library.
 
 @class marked-element
 @blurb Element wrapper for the marked library.
-@status alpha
-@snap snap.png
 -->
 <dom-module id="marked-element">
 
-  <style>
-    marked-element {
-      display: block;
-    }
-  </style>
+  <template>
+    <div id="content"></div>
+  </template>
 
 </dom-module>
 
 <script>
 
+  'use strict';
+
   Polymer({
 
     is: 'marked-element',
 
-    published: {
-      text: String
+    properties: {
+
+      text: {
+        observer: 'textChanged',
+        type: String,
+        value: null
+      }
+
     },
 
-    bind: {
-      text: 'textChanged'
-    },
-
-    attached: function() {
+    ready: function() {
       marked.setOptions({
         highlight: this.highlight.bind(this)
       });
+
       if (!this.text) {
-        this.text = this.innerHTML;
+        // Use the Markdown from the first `<script>` descendant whose MIME type starts with
+        // "text/markdown". Script elements beyond the first are ignored.
+        var markdownElement = Polymer.dom(this).querySelector('[type^="text/markdown"]');
+        if (markdownElement != null) {
+          this.text = markdownElement.textContent;
+        }
       }
     },
 
     textChanged: function (newVal, oldVal) {
-      if (newVal) {
-        this.innerHTML = marked(this.text);
-      }
+      this.$.content.innerHTML = newVal ? marked(this.text) : '';
     },
 
     highlight: function(code, lang) {
