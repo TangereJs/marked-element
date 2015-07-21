@@ -62,7 +62,7 @@ Element wrapper for the `marked` (http://marked.org/) library.
     },
 
     renderAsService: function(text) {
-      return marked(text);
+      this.$.content.innerHTML = text ? marked(text) : '';
     },
 
     highlight: function(code, lang) {
